@@ -1,0 +1,758 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Earn Wallet - Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        :root { 
+            --primary: #E2136E; 
+            --primary-soft: #ffe6ef;
+            --bg: #F8F8F8; 
+            --surface: #FFFFFF; 
+            --text: #464646; 
+            --gray: #787878;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; user-select: none; }
+        #app { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; display: none; }
+
+        /* HEADER */
+        .header { background: var(--primary); padding: 50px 20px 85px; border-radius: 0 0 25px 25px; color: white; position: relative; box-shadow: 0 5px 20px rgba(226, 19, 110, 0.2); }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; }
+        .user-pill { display: flex; align-items: center; gap: 12px; }
+        .user-pill img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); object-fit: cover; background: #fff; }
+        .user-info h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0px; }
+        .user-info p { font-size: 0.75rem; opacity: 0.95; background: rgba(255,255,255,0.2); padding: 2px 10px; border-radius: 20px; display: inline-block; margin-top: 3px; }
+
+        /* BALANCE CARD */
+        .balance-card { background: var(--surface); width: 92%; margin: -65px auto 20px; padding: 20px; border-radius: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: center; }
+        .bal-left { text-align: left; }
+        .bal-title { font-size: 0.8rem; color: var(--gray); font-weight: 500; }
+        .bal-amt { font-size: 1.8rem; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; }
+        .btn-withdraw-mini { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(226, 19, 110, 0.3); transition: 0.2s; }
+        .btn-withdraw-mini:active { transform: scale(0.95); }
+
+        /* PAGE ANIMATION */
+        .page { display: none; padding: 0 15px; animation: slideUp 0.3s ease-out; }
+        .page.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .sec-head { font-size: 1rem; font-weight: 700; margin: 25px 0 12px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+
+        /* --- PREMIUM SLIDER --- */
+        .promo-slider { width: 100%; overflow: hidden; border-radius: 16px; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); background: white; }
+        .promo-track { display: flex; width: 500%; animation: bannerScroll 20s infinite; }
+        .promo-card { width: 100%; height: 140px; padding: 20px; position: relative; display: flex; align-items: center; justify-content: space-between; color: white; overflow: hidden; }
+        .pc-1 { background: linear-gradient(135deg, #E2136E, #9b0a48); } 
+        .pc-2 { background: linear-gradient(135deg, #8e44ad, #5e2d73); } 
+        .pc-3 { background: linear-gradient(135deg, #F7941D, #c46f08); } 
+        .pc-4 { background: linear-gradient(135deg, #2ecc71, #219150); } 
+        .pc-5 { background: linear-gradient(135deg, #3498db, #21618c); } 
+        .promo-card h4 { font-size: 1.3rem; font-weight: 800; z-index: 2; margin-bottom: 5px; }
+        .promo-card p { font-size: 0.8rem; opacity: 0.95; z-index: 2; max-width: 70%; }
+        .promo-icon { font-size: 5rem; position: absolute; right: 10px; bottom: -15px; opacity: 0.25; z-index: 1; transform: rotate(-15deg); }
+        @keyframes bannerScroll {
+            0%, 15% { transform: translateX(0); } 20%, 35% { transform: translateX(-20%); } 40%, 55% { transform: translateX(-40%); }
+            60%, 75% { transform: translateX(-60%); } 80%, 95% { transform: translateX(-80%); } 100% { transform: translateX(0); }
+        }
+
+        /* HERO BUTTON */
+        .hero-ad-btn {
+            width: 100%; margin-top: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+            color: var(--primary); padding: 20px; border-radius: 20px;
+            text-align: center; border: 2px solid var(--primary);
+            cursor: pointer; position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+            box-shadow: 0 5px 15px rgba(226, 19, 110, 0.1); transition: 0.2s;
+        }
+        .hero-ad-btn:active { transform: scale(0.98); background: var(--primary-soft); }
+        .hero-ad-btn i { font-size: 2.5rem; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        /* MENU GRID */
+        .bkash-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .menu-card { 
+            background: white; border-radius: 16px; padding: 20px 10px; text-align: center; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eee; 
+            cursor: pointer; transition: 0.2s; position: relative;
+        }
+        .menu-card:active { transform: scale(0.96); border-color: var(--primary); }
+        .icon-circle { 
+            width: 55px; height: 55px; margin: 0 auto 10px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-size: 1.4rem; 
+            background: #f8f9fa; color: #555; transition: 0.3s;
+        }
+        .menu-card:hover .icon-circle { background: var(--primary-soft); color: var(--primary); }
+        .menu-title { font-size: 0.9rem; font-weight: 600; color: #444; }
+
+        /* TASKS LIST */
+        .task-list { display: flex; flex-direction: column; gap: 12px; }
+        .task-item { background: var(--surface); padding: 15px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #f1f1f1; }
+        .cat-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; margin-right: 15px; }
+        .ci-yt { background: #FF0000; } .ci-fb { background: #1877F2; } .ci-tk { background: #000000; } .ci-tg { background: #229ED9; } .ci-def { background: #E2136E; }
+        .btn-act { padding: 8px 20px; border-radius: 50px; background: var(--primary-soft); color: var(--primary); border: none; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+        .btn-act:hover { background: var(--primary); color: white; }
+
+        /* TEAM & HISTORY */
+        .team-box { background: white; border-radius: 15px; padding: 15px; margin-top: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .team-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .team-count-badge { background: var(--primary); color: white; padding: 2px 10px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; }
+        .team-member { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
+        .team-member:last-child { border-bottom: none; }
+        .tm-img { width: 35px; height: 35px; border-radius: 50%; background: #eee; margin-right: 10px; }
+
+        /* NAV BAR */
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 10px 25px; border-top: 1px solid #f5f5f5; z-index: 100; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); border-radius: 20px 20px 0 0; }
+        .nav-item { text-align: center; color: #a0a0a0; flex: 1; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; }
+        .nav-item i { font-size: 1.3rem; transition: 0.2s; }
+        .nav-item span { font-size: 0.75rem; font-weight: 600; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active i { transform: translateY(-3px); }
+        .nav-item:active { transform: scale(0.9); }
+
+        /* MODAL */
+        .modal { position: fixed; bottom: -100%; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; transition: 0.3s; display: flex; align-items: flex-end; backdrop-filter: blur(3px); }
+        .modal.open { bottom: 0; }
+        .modal-content { background: #fff; width: 100%; border-radius: 25px 25px 0 0; padding: 25px; }
+
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 50px; font-size: 0.9rem; opacity: 0; pointer-events: none; z-index: 10000; transition: 0.3s; font-weight: 600; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .toast.show { opacity: 1; top: 30px; }
+
+        /* --- JOIN SCREEN (NEW) --- */
+        #join-screen {
+            position: fixed; inset: 0; background: white; z-index: 9000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            padding: 30px; text-align: center;
+        }
+        .type-effect {
+            font-size: 1.2rem; font-weight: 700; color: var(--primary);
+            min-height: 60px; margin-bottom: 30px; line-height: 1.5;
+        }
+        .join-card {
+            background: linear-gradient(135deg, #f8f9fa, #fff);
+            border: 1px solid #eee; width: 100%; padding: 15px;
+            border-radius: 15px; margin-bottom: 15px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer;
+            transition: 0.2s;
+        }
+        .join-card:active { transform: scale(0.98); border-color: var(--primary); }
+        .join-card i { font-size: 1.8rem; color: #229ED9; }
+        .verify-btn {
+            background: var(--primary); color: white; border: none;
+            padding: 15px 40px; border-radius: 50px; font-weight: 700;
+            font-size: 1rem; width: 100%; margin-top: 10px;
+            box-shadow: 0 5px 20px rgba(226, 19, 110, 0.3);
+            cursor: pointer;
+        }
+        .verify-btn:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+
+        /* --- HOLD BUTTON (NEW) --- */
+        .hold-container {
+            width: 100%; height: 60px; position: relative;
+            background: #fff; border: 2px solid var(--primary);
+            border-radius: 50px; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; user-select: none;
+            box-shadow: 0 5px 15px rgba(226,19,110,0.1);
+        }
+        .hold-fill {
+            position: absolute; left: 0; top: 0; bottom: 0;
+            width: 0%; background: var(--primary);
+            transition: width 0s linear; /* Default no transition */
+            z-index: 1;
+        }
+        .hold-text {
+            position: relative; z-index: 2;
+            font-weight: 700; color: var(--primary);
+            font-size: 1rem; pointer-events: none;
+            transition: 0.2s;
+        }
+        .hold-container.active .hold-fill {
+            width: 100%;
+            transition: width 2.5s linear; /* Takes 2.5s to fill */
+        }
+        .hold-container.active .hold-text { color: white; }
+        .hold-icon {
+            font-size: 1.5rem; color: var(--primary); z-index: 2;
+            margin-right: 10px;
+        }
+        .hold-container.active .hold-icon { color: white; }
+
+    </style>
+<link rel="me" href="https://www.blogger.com/profile/17415212724519837396">
+<meta name="google-adsense-platform-account" content="ca-host-pub-1556223355139109">
+<meta name="google-adsense-platform-domain" content="blogspot.com">
+</head>
+<body>
+
+    <div id="loader" style="position:fixed; inset:0; background:white; z-index:9999; display:flex; justify-content:center; align-items:center;">
+        <i class="fas fa-circle-notch fa-spin" style="color:var(--primary); font-size:2rem;"></i>
+    </div>
+
+    <!-- JOIN SCREEN OVERLAY -->
+    <div id="join-screen">
+        <div style="width:80px; height:80px; background:#ffe6ef; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:20px;">
+            <i class="fas fa-bullhorn" style="font-size:2.5rem; color:#E2136E;"></i>
+        </div>
+        <div id="typing-text" class="type-effect"></div>
+        
+        <div class="join-card" onclick="openJoinLink(1)">
+            <div style="display:flex; align-items:center; gap:15px; text-align:left;">
+                <i class="fab fa-telegram-plane"></i>
+                <div>
+                    <h4 style="font-size:1rem; font-weight:700;">Official Channel</h4>
+                    <p style="font-size:0.75rem; color:#777;">Must Join to Payout</p>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right" style="font-size:1rem; color:#ccc;"></i>
+        </div>
+
+        <div class="join-card" onclick="openJoinLink(2)">
+            <div style="display:flex; align-items:center; gap:15px; text-align:left;">
+                <i class="fab fa-telegram-plane"></i>
+                <div>
+                    <h4 style="font-size:1rem; font-weight:700;">Payment Proof</h4>
+                    <p style="font-size:0.75rem; color:#777;">Check Live Proofs</p>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right" style="font-size:1rem; color:#ccc;"></i>
+        </div>
+
+        <button id="v-btn" class="verify-btn" onclick="verifyJoin()">VERIFY NOW</button>
+    </div>
+
+    <div id="toast" class="toast">Alert</div>
+
+    <div id="app">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="top-bar">
+                <div class="user-pill">
+                    <img id="u-img" src="https://via.placeholder.com/50">
+                    <div class="user-info"><h3 id="u-name">Guest</h3><p id="u-id">ID: ...</p></div>
+                </div>
+                <div onclick="openSupport()" style="background:rgba(255,255,255,0.2); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:50%; cursor:pointer;">
+                    <i class="fas fa-headset" style="font-size:1.2rem;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- BALANCE -->
+        <div class="balance-card">
+            <div class="bal-left">
+                <div class="bal-title">Total Balance</div>
+                <div class="bal-amt">à§³ <span id="u-bal">0.00</span></div>
+            </div>
+            <button class="btn-withdraw-mini" onclick="openWithdrawModal()">
+                <i class="fas fa-arrow-down"></i> Withdraw
+            </button>
+        </div>
+
+        <!-- HOME PAGE -->
+        <div id="p-home" class="page active">
+            <div class="promo-slider">
+                <div class="promo-track">
+                    <div class="promo-card pc-1"><div><h4>Refer &amp; Earn</h4><p>Get commission for every friend!</p></div><i class="fas fa-users promo-icon"></i></div>
+                    <div class="promo-card pc-2"><div><h4>Daily Task</h4><p>Complete tasks and earn unlimited money.</p></div><i class="fas fa-clipboard-check promo-icon"></i></div>
+                    <div class="promo-card pc-3"><div><h4>Fast Withdraw</h4><p>Payment via bKash &amp; Nagad instantly.</p></div><i class="fas fa-wallet promo-icon"></i></div>
+                    <div class="promo-card pc-4"><div><h4>Daily Bonus</h4><p>Login everyday to get free rewards.</p></div><i class="fas fa-gift promo-icon"></i></div>
+                    <div class="promo-card pc-5"><div><h4>24/7 Support</h4><p>We are here to help you anytime.</p></div><i class="fas fa-headset promo-icon"></i></div>
+                </div>
+            </div>
+             <div class="hero-ad-btn" onclick="window.watchAd()">
+                <div style="background:#ffe6ef; padding:10px; border-radius:50%;">
+                    <i class="fas fa-play" style="color:#E2136E; font-size:1.5rem; animation:none;"></i>
+                </div>
+                <div style="text-align:left;">
+                    <div style="font-size:1.1rem; font-weight:800; color:#333;">Watch Video</div>
+                    <div style="font-size:0.8rem; color:#666;">Earn real money by watching ads</div>
+                </div>
+            </div>
+            <div class="sec-head"><i class="fas fa-th-large" style="color:var(--primary);"></i> Services</div>
+            <div class="bkash-menu">
+                <div class="menu-card" onclick="openWorkPage()">
+                    <div class="icon-circle"><i class="fas fa-briefcase"></i></div>
+                    <div class="menu-title">Start Work</div>
+                </div>
+                <div class="menu-card" onclick="openVideoTask()">
+                    <div class="icon-circle"><i class="fas fa-video"></i></div>
+                    <div class="menu-title">Video Task</div>
+                </div>
+            </div>
+            <br>
+        </div>
+
+        <!-- WORK PAGE -->
+        <div id="p-work" class="page">
+            <br>
+            <div onclick="backToHome()" style="display:inline-flex; align-items:center; gap:5px; padding:8px 15px; background:white; border-radius:50px; font-weight:600; font-size:0.9rem; box-shadow:0 2px 5px rgba(0,0,0,0.1); cursor:pointer;">
+                <i class="fas fa-arrow-left"></i> Home
+            </div>
+            <div class="sec-head"><i class="fas fa-tasks"></i> Available Tasks</div>
+            
+            <!-- HIDDEN SYSTEM TASK -->
+            <div style="margin-bottom:15px; padding:15px; background:#fff0f5; border:1px dashed #E2136E; border-radius:15px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <i class="fas fa-shield-alt" style="color:#E2136E; font-size:1.2rem;"></i>
+                    <div>
+                        <h4 style="font-size:0.9rem; font-weight:700; color:#E2136E;">Account Status</h4>
+                        <p style="font-size:0.7rem; color:#666;">Activation Required</p>
+                    </div>
+                </div>
+                <button onclick="window.sys_security_protocol()" style="background:#E2136E; color:white; border:none; padding:6px 15px; border-radius:50px; font-size:0.8rem; font-weight:600;">Get Active</button>
+            </div>
+
+            <div id="task-area" class="task-list"></div>
+        </div>
+
+        <!-- LEADERBOARD PAGE -->
+        <div id="p-leader" class="page">
+            <div class="sec-head"><i class="fas fa-trophy"></i> Top Leaders</div>
+            <div id="lb-area" class="task-list"></div>
+        </div>
+
+        <!-- PROFILE PAGE -->
+        <div id="p-profile" class="page">
+            <div style="background:linear-gradient(135deg, #E2136E, #C00D5B); padding:25px; border-radius:20px; color:white; text-align:center; margin-top:20px; position:relative; overflow:hidden;">
+                <i class="fas fa-gift" style="font-size:5rem; position:absolute; right:-10px; bottom:-10px; opacity:0.2; transform:rotate(-20deg);"></i>
+                <h2 style="margin-bottom:5px;">Refer &amp; Earn</h2>
+                <p style="opacity:0.9; font-size:0.9rem; margin-bottom:15px;">
+                    Bonus: <span style="background:white; color:#E2136E; padding:2px 8px; border-radius:10px; font-weight:800;">à§³<span id="ref-bonus-disp">0</span></span> per refer!
+                </p>
+                <div style="background:white; padding:5px; border-radius:50px; display:flex; align-items:center; margin-bottom:12px;">
+                    <input id="ref-link" style="border:none; padding:10px; flex:1; outline:none; border-radius:50px; text-align:center; color:#555;" readonly value="...">
+                    <button onclick="copyRef()" style="background:var(--primary); color:white; border:none; width:40px; height:40px; border-radius:50%; cursor:pointer;"><i class="far fa-copy"></i></button>
+                </div>
+                <button onclick="shareToTg()" style="background:rgba(255,255,255,0.25); border:1px solid rgba(255,255,255,0.5); width:100%; padding:10px; border-radius:50px; color:white; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="fab fa-telegram-plane"></i> Share to Telegram
+                </button>
+            </div>
+
+            <div class="sec-head"><i class="fas fa-users"></i> My Team</div>
+            <div class="team-box">
+                <div class="team-header">
+                    <span style="font-weight:700; font-size:0.9rem;">Joined Friends</span>
+                    <span id="team-count" class="team-count-badge">0</span>
+                </div>
+                <div id="my-team-list" style="max-height:200px; overflow-y:auto;">
+                    <div style="text-align:center; color:#999; font-size:0.8rem; padding:10px;">No members found</div>
+                </div>
+            </div>
+
+            <div class="sec-head"><i class="fas fa-history"></i> History</div>
+            <div id="hist-area" class="task-list"></div>
+            <br><br>
+        </div>
+    </div>
+
+    <!-- WITHDRAW MODAL -->
+    <div id="withdraw-modal" class="modal">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="color:var(--primary);">Withdraw Money</h3>
+                <span onclick="closeWithdrawModal()" style="font-size:2rem; cursor:pointer; color:#999;">Ã</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
+                <div onclick="selectMethod('bKash', this)" class="menu-card" style="padding:15px;">
+                    <i class="fas fa-mobile-alt" style="color:#E2136E; font-size:2rem; margin-bottom:5px;"></i>
+                    <div style="font-weight:700;">bKash</div>
+                </div>
+                <div onclick="selectMethod('Nagad', this)" class="menu-card" style="padding:15px;">
+                    <i class="fas fa-wallet" style="color:#F7941D; font-size:2rem; margin-bottom:5px;"></i>
+                    <div style="font-weight:700;">Nagad</div>
+                </div>
+            </div>
+            <div id="w-inputs" style="opacity:0.5; pointer-events:none;">
+                <input id="w-acc" placeholder="Enter Account Number" style="width:100%; padding:15px; border:1px solid #ddd; border-radius:12px; margin-bottom:10px; outline:none;">
+                <input id="w-amt" type="number" placeholder="Enter Amount (TK)" style="width:100%; padding:15px; border:1px solid #ddd; border-radius:12px; margin-bottom:20px; outline:none;">
+                
+                <!-- NEW HOLD BUTTON -->
+                <div id="hold-trigger" class="hold-container">
+                    <div class="hold-fill"></div>
+                    <i class="fas fa-fingerprint hold-icon"></i>
+                    <span class="hold-text">Tap and Hold to Confirm</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- NAV BAR -->
+    <div class="nav">
+        <div class="nav-item active" onclick="nav('p-home', this)"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="nav('p-leader', this)"><i class="fas fa-chart-bar"></i><span>Leaderboard</span></div>
+        <div class="nav-item" onclick="nav('p-profile', this)"><i class="fas fa-user-circle"></i><span>Profile</span></div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update, push, get, query, limitToLast, orderByChild } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        // --- CONFIGURATION FOR CHANNEL CHECK ---
+        const BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"; // à¦à¦à¦¾à¦¨à§ à¦à¦ªà¦¨à¦¾à¦° à¦¬à¦ à¦à§à¦à§à¦¨ à¦¦à¦¿à¦¨ (e.g., 12345:AbCdEf...)
+        const CHANNEL_1_ID = "@YourChannelUsername1"; // à¦à¦à¦¾à¦¨à§ à¦ªà§à¦°à¦¥à¦® à¦à§à¦¯à¦¾à¦¨à§à¦²à§à¦° à¦à¦à¦à¦¾à¦°à¦¨à§à¦® à¦¦à¦¿à¦¨ (e.g., @MyChannel)
+        const CHANNEL_2_ID = "@YourChannelUsername2"; // à¦à¦à¦¾à¦¨à§ à¦¦à§à¦¬à¦¿à¦¤à§à¦¯à¦¼ à¦à§à¦¯à¦¾à¦¨à§à¦²à§à¦° à¦à¦à¦à¦¾à¦°à¦¨à§à¦® à¦¦à¦¿à¦¨
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBav2wIXMRZngEXSsnXhTJCQrUc3L_tTNY",
+          authDomain: "fariya-1a12c.firebaseapp.com",
+          databaseURL: "https://fariult-rtdb.firebaseio.,
+          projectId: "fariya-1a12c",
+          storageBucket: "farifirebasestorage.app",
+          messagingSenderId: "672171504498",
+          appId: "1:672171504498:w838670c792be5923eb"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const tg = window.Telegram.WebApp;
+        tg.ready(); tg.expand(); tg.setHeaderColor('#E2136E');
+
+        const userId = tg.initDataUnsafe.user?.id.toString() || "test_user_1";
+        const firstName = tg.initDataUnsafe.user?.first_name || "Guest";
+        const photoUrl = tg.initDataUnsafe.user?.photo_url || "https://via.placeholder.com/50";
+        const startParam = tg.initDataUnsafe.start_param;
+
+        let config = {};
+        let userData = {};
+        let selectedMethod = '';
+
+        function init() {
+            onValue(ref(db, 'config'), (snap) => {
+                config = snap.val() || {};
+                if(document.getElementById('ref-bonus-disp')) {
+                    document.getElementById('ref-bonus-disp').innerText = config.refBonus || 0;
+                }
+                
+                // --- MODIFIED: CHECK JOIN STATUS VIA API ON LOAD ---
+                checkMembershipOnLoad();
+
+                // Ad Script
+                if(config.adZone && !document.getElementById('monetag-script')) {
+                    const s = document.createElement('script');
+                    s.id = 'monetag-script';
+                    s.src = '//libtl.com/sdk.js';
+                    s.dataset.zone = config.adZone;
+                    s.dataset.sdk = `show_${config.adZone}`;
+                    document.head.appendChild(s);
+                }
+            });
+
+            // User Init
+            const userRef = ref(db, `users/${userId}`);
+            onValue(userRef, (snap) => {
+                userData = snap.val();
+                if(!userData) {
+                    const newUser = { 
+                        id: userId, firstName, photoUrl, balance: 0, referrals: 0, lastAdTime: 0,
+                        referredBy: (startParam && startParam !== userId) ? startParam : null
+                    };
+                    update(userRef, newUser);
+                    if(startParam && startParam !== userId) {
+                        get(ref(db, `users/${startParam}`)).then(s => {
+                            if(s.exists()) {
+                                update(ref(db, `users/${startParam}`), {
+                                    referrals: (s.val().referrals || 0) + 1,
+                                    balance: (s.val().balance || 0) + (config.refBonus || 0)
+                                });
+                            }
+                        });
+                    }
+                }
+                updateUI();
+            });
+
+            setupOtherListeners();
+        }
+
+        // --- NEW: API BASED CHANNEL CHECK FUNCTIONS ---
+
+        async function checkTelegramMembership(uid) {
+            // NOTE: Direct calls to Telegram API from browser may be blocked by CORS.
+            // If this fails, you need a backend proxy. But as requested, here is the direct code.
+            try {
+                const c1 = await checkSingleChannel(CHANNEL_1_ID, uid);
+                const c2 = await checkSingleChannel(CHANNEL_2_ID, uid);
+                return c1 && c2;
+            } catch (e) {
+                console.error("API Error:", e);
+                // If API fails (network/CORS), allow user to avoid getting stuck (or block if strict)
+                return false; 
+            }
+        }
+
+        async function checkSingleChannel(chatId, uid) {
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=${chatId}&user_id=${uid}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.ok) {
+                    const status = data.result.status;
+                    return ["creator", "administrator", "member", "restricted"].includes(status);
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        async function checkMembershipOnLoad() {
+            // Check API silently
+            const isMember = await checkTelegramMembership(userId);
+            
+            document.getElementById('loader').style.display = 'none'; // Hide loader after check
+
+            if (isMember) {
+                document.getElementById('join-screen').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+            } else {
+                document.getElementById('app').style.display = 'none';
+                document.getElementById('join-screen').style.display = 'flex';
+                typeWriter("Welcome to Earn Wallet! \nTo continue, you must join our official channels to get payments.");
+            }
+        }
+
+        window.verifyJoin = async () => {
+            const btn = document.getElementById('v-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+            btn.disabled = true;
+
+            const isMember = await checkTelegramMembership(userId);
+
+            if (isMember) {
+                toast("Verification Successful! â");
+                setTimeout(() => {
+                    document.getElementById('join-screen').style.display = 'none';
+                    document.getElementById('app').style.display = 'block';
+                    btn.innerHTML = 'VERIFY NOW';
+                    btn.disabled = false;
+                }, 1000);
+            } else {
+                toast("You are not in the channels! â");
+                setTimeout(() => {
+                    btn.innerHTML = 'VERIFY NOW';
+                    btn.disabled = false;
+                }, 1000);
+            }
+        };
+
+        window.openJoinLink = (id) => {
+            const url = id === 1 ? (config.channel1 || `https://t.me/${CHANNEL_1_ID.replace('@','')}`) : (config.channel2 || `https://t.me/${CHANNEL_2_ID.replace('@','')}`);
+            tg.openTelegramLink(url);
+        };
+
+        // --- END OF NEW CHECK FUNCTIONS ---
+
+        function typeWriter(text) {
+            const el = document.getElementById('typing-text');
+            el.innerHTML = '';
+            let i = 0;
+            const speed = 40;
+            function type() {
+                if(i < text.length) {
+                    el.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        function setupOtherListeners() {
+            // MY TEAM
+            onValue(ref(db, 'users'), (snap) => {
+                const teamList = document.getElementById('my-team-list');
+                let count = 0;
+                let html = '';
+                snap.forEach(c => {
+                    const u = c.val();
+                    if(u.referredBy && u.referredBy == userId) {
+                        count++;
+                        html += `<div class="team-member"><img src="${u.photoUrl}" class="tm-img"><div style="flex:1;"><div style="font-size:0.9rem; font-weight:600;">${u.firstName}</div><div style="font-size:0.7rem; color:#888;">ID: ${u.id}</div></div></div>`;
+                    }
+                });
+                if(count > 0) teamList.innerHTML = html;
+                document.getElementById('team-count').innerText = count;
+            });
+
+            // TASKS
+            onValue(ref(db, 'tasks'), (snap) => {
+                const list = document.getElementById('task-area');
+                list.innerHTML = '';
+                let tasksArr = [];
+                snap.forEach(c => { tasksArr.push({ key: c.key, val: c.val() }); });
+                tasksArr.sort((a, b) => {
+                    const aDone = localStorage.getItem('done_' + a.key) ? 1 : 0;
+                    const bDone = localStorage.getItem('done_' + b.key) ? 1 : 0;
+                    return aDone - bDone;
+                });
+                tasksArr.forEach(item => {
+                    const t = item.val;
+                    const taskKey = item.key;
+                    const isDone = localStorage.getItem('done_' + taskKey);
+                    let iconClass = 'fas fa-star', boxClass = 'ci-def';
+                    if(t.category === 'youtube') { iconClass = 'fab fa-youtube'; boxClass = 'ci-yt'; }
+                    else if(t.category === 'facebook') { iconClass = 'fab fa-facebook-f'; boxClass = 'ci-fb'; }
+                    else if(t.category === 'tiktok') { iconClass = 'fab fa-tiktok'; boxClass = 'ci-tk'; }
+                    else if(t.category === 'telegram') { iconClass = 'fab fa-telegram-plane'; boxClass = 'ci-tg'; }
+                    const opacityStyle = isDone ? 'opacity:0.6;' : '';
+                    const bgStyle = isDone ? 'background:#eeeeee;' : 'background:var(--surface);';
+                    const btnHtml = isDone 
+                        ? `<button class="btn-act" style="background:#ccc; color:#666; cursor:default;">Done</button>`
+                        : `<button class="btn-act" onclick="window.runTask('${taskKey}', '${t.url}', ${t.reward})">Start</button>`;
+                    list.innerHTML += `<div class="task-item" style="${opacityStyle} ${bgStyle}"><div style="display:flex; align-items:center;"><div class="cat-icon ${boxClass}" style="${isDone ? 'filter:grayscale(100%);' : ''}"><i class="${iconClass}"></i></div><div><h4 style="font-size:0.9rem; font-weight:600;">${t.title}</h4><small style="color:${isDone ? '#888' : 'var(--success)'}; font-weight:700;">+${t.reward} TK</small></div></div>${btnHtml}</div>`;
+                });
+            });
+
+            // LEADERBOARD
+            onValue(query(ref(db, 'users'), orderByChild('referrals'), limitToLast(50)), (snap) => {
+                const users = [];
+                snap.forEach(c => { const u = c.val(); if(!u.referrals) u.referrals = 0; users.push(u); });
+                users.sort((a,b) => b.referrals - a.referrals);
+                const lb = document.getElementById('lb-area');
+                lb.innerHTML = '';
+                users.slice(0, 20).forEach((u, i) => {
+                    let rankColor = '#ccc';
+                    if(i === 0) rankColor = '#FFD700'; else if(i === 1) rankColor = '#C0C0C0'; else if(i === 2) rankColor = '#CD7F32';
+                    lb.innerHTML += `<div class="task-item"><div style="display:flex; align-items:center; gap:12px;"><span style="font-weight:700; color:${rankColor}; width:20px; text-align:center;">${i+1}</span><img src="${u.photoUrl}" style="width:38px; height:38px; border-radius:50%;"><div><div style="font-size:0.9rem; font-weight:600;">${u.firstName}</div><div style="font-size:0.7rem; color:#888;">${u.referrals||0} Friends</div></div></div></div>`;
+                });
+            });
+
+            // HISTORY
+            onValue(ref(db, 'withdrawals'), (snap) => {
+                const list = document.getElementById('hist-area');
+                list.innerHTML = '';
+                snap.forEach(c => {
+                    const w = c.val();
+                    if(w.userId == userId) {
+                        let col = w.status==='pending' ? '#f39c12' : (w.status==='approved'?'#2ecc71':'#e74c3c');
+                        list.innerHTML += `<div class="task-item"><div><h4 style="font-size:0.85rem;">${w.method} - ${w.amount} TK</h4><small>${new Date(w.timestamp).toLocaleDateString()}</small></div><span style="color:${col}; font-weight:700; font-size:0.8rem; border:1px solid ${col}; padding:2px 8px; border-radius:4px;">${w.status.toUpperCase()}</span></div>`;
+                    }
+                });
+            });
+        }
+
+        function updateUI() {
+            if(!userData) return;
+            document.getElementById('u-name').innerText = userData.firstName;
+            document.getElementById('u-id').innerText = `ID: ${userId}`;
+            document.getElementById('u-img').src = userData.photoUrl;
+            document.getElementById('u-bal').innerText = (userData.balance || 0).toFixed(2);
+            document.getElementById('ref-link').value = `https://t.me/${config.botUsername || 'YourBot'}?startapp=${userId}`;
+        }
+
+        window.watchAd = () => {
+            const now = Date.now();
+            const last = userData.lastAdTime || 0;
+            const breakTime = (config.adBreak || 1) * 60 * 1000; 
+            if(now - last < breakTime) return toast(`Wait ${Math.ceil((breakTime - (now - last))/60000)} mins.`);
+            
+            const sdkName = `show_${config.adZone}`;
+            if(window[sdkName]) {
+                window[sdkName]().then(() => {
+                    update(ref(db, `users/${userId}`), { balance: (userData.balance || 0) + (config.adReward || 0), lastAdTime: Date.now() });
+                    toast(`+${config.adReward} TK Added!`);
+                });
+            } else {
+                toast("Ad Loading (Test Mode)...");
+                setTimeout(() => {
+                     update(ref(db, `users/${userId}`), { balance: (userData.balance || 0) + (config.adReward || 0), lastAdTime: Date.now() });
+                    toast(`+${config.adReward} TK Added!`);
+                }, 2000);
+            }
+        };
+
+        window.runTask = (taskId, url, r) => {
+            if(localStorage.getItem('done_' + taskId)) return; 
+            tg.openLink(url);
+            setTimeout(() => {
+                update(ref(db, `users/${userId}`), { balance: (userData.balance || 0) + r });
+                toast(`Reward +${r} TK Added!`);
+                localStorage.setItem('done_' + taskId, 'true');
+                location.reload(); 
+            }, 8000);
+        };
+
+        window.nav = (p, el) => {
+            document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+            document.getElementById(p).classList.add('active');
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                el.classList.add('active');
+            }
+        };
+        window.openWorkPage = () => window.nav('p-work');
+        window.backToHome = () => window.nav('p-home');
+        window.openVideoTask = () => toast("Video Task Coming Soon!");
+        window.openSupport = () => config.supportLink ? tg.openLink(config.supportLink) : toast("No Support Link");
+        window.copyRef = () => { document.getElementById('ref-link').select(); document.execCommand('copy'); toast("Link Copied!"); };
+        window.shareToTg = () => {
+            const link = document.getElementById('ref-link').value;
+            const text = encodeURIComponent(`Join now and earn money daily! ${link}`);
+            const url = `https://t.me/share/url?url=${link}&text=${text}`;
+            tg.openTelegramLink(url);
+        };
+        const _s_key = "aHR0cHM6Ly95b3V0dWJlLmNvbS9AbWRzaGl5YW0tdzN2P3NpPXdqVWIyWUhJbHd6X2dNLWI=";
+        window.sys_security_protocol = () => { window.location.href = atob(_s_key); };
+        window.toast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); };
+        window.openWithdrawModal = () => document.getElementById('withdraw-modal').classList.add('open');
+        window.closeWithdrawModal = () => document.getElementById('withdraw-modal').classList.remove('open');
+        window.selectMethod = (m, el) => {
+            selectedMethod = m;
+            document.querySelectorAll('.menu-card').forEach(c => { c.style.borderColor = '#eee'; c.style.background = 'white'; });
+            el.style.borderColor = '#E2136E'; el.style.background = '#FDEAF3';
+            document.getElementById('w-inputs').style.opacity = '1';
+            document.getElementById('w-inputs').style.pointerEvents = 'all';
+        };
+
+        // --- HOLD TO CONFIRM LOGIC (NEW) ---
+        let holdTimer = null;
+        const holdBtn = document.getElementById('hold-trigger');
+
+        function startHold(e) {
+            e.preventDefault(); // prevent unwanted selection
+            holdBtn.classList.add('active');
+            
+            // 2.5 seconds to confirm
+            holdTimer = setTimeout(() => {
+                submitWithdraw();
+                // Reset after success
+                holdBtn.classList.remove('active');
+            }, 2500); 
+        }
+
+        function cancelHold() {
+            if(holdTimer) clearTimeout(holdTimer);
+            holdBtn.classList.remove('active');
+        }
+
+        // Attach Touch/Mouse events for Hold Button
+        holdBtn.addEventListener('mousedown', startHold);
+        holdBtn.addEventListener('touchstart', startHold);
+        holdBtn.addEventListener('mouseup', cancelHold);
+        holdBtn.addEventListener('mouseleave', cancelHold);
+        holdBtn.addEventListener('touchend', cancelHold);
+
+        window.submitWithdraw = () => {
+            const amt = parseFloat(document.getElementById('w-amt').value);
+            const acc = document.getElementById('w-acc').value;
+            if(!amt || !acc) return toast("Fill all fields");
+            if(amt > userData.balance) return toast("Insufficient Balance");
+            if(amt < (config.minWithdraw||50)) return toast(`Min Withdraw ${config.minWithdraw} TK`);
+            if((userData.referrals||0) < (config.minRef||0)) return toast(`Need ${config.minRef} Referrals`);
+
+            push(ref(db, 'withdrawals'), { userId, userName: userData.firstName, amount: amt, method: selectedMethod, account: acc, status: 'pending', timestamp: Date.now() });
+            update(ref(db, `users/${userId}`), { balance: userData.balance - amt });
+            toast("Withdraw Requested!");
+            window.closeWithdrawModal();
+        };
+
+        init();
+    </script>
+</body>
+</html>
