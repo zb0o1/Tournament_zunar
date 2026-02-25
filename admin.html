@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Smart Admin - Earn Wallet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #E2136E;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 90px; }
+
+        /* HEADER */
+        .header { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.2rem; font-weight: 700; color: var(--primary); letter-spacing: 1px; }
+        .logout { color: var(--danger); font-size: 1.2rem; cursor: pointer; }
+
+        /* CONTAINER */
+        .container { padding: 20px; max-width: 800px; margin: 0 auto; }
+
+        /* STATS GRID */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #334155; position: relative; overflow: hidden; }
+        .stat-num { font-size: 1.8rem; font-weight: 700; color: var(--primary); margin-top: 5px; }
+        .stat-label { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* SECTION TITLES */
+        .sec-title { font-size: 1rem; font-weight: 600; margin: 25px 0 15px; display: flex; align-items: center; gap: 10px; color: var(--text); border-left: 4px solid var(--primary); padding-left: 10px; }
+
+        /* SETTINGS FORM */
+        .settings-box { background: var(--card-bg); padding: 20px; border-radius: 15px; border: 1px solid #334155; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; }
+        .form-control { width: 100%; background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 10px; color: white; outline: none; transition: 0.3s; }
+        .form-control:focus { border-color: var(--primary); }
+        .btn-save { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(226,19,110,0.3); }
+
+        /* ADD TASK FORM */
+        .task-adder { display: flex; flex-direction: column; gap: 10px; background: var(--card-bg); padding: 15px; border-radius: 15px; }
+        .task-row { display: flex; gap: 10px; }
+        
+        /* LIST ITEMS (Tasks & Withdrawals) */
+        .list-container { display: flex; flex-direction: column; gap: 12px; }
+        .list-card { background: var(--card-bg); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; position: relative; overflow: hidden; }
+        .lc-left h4 { font-size: 0.9rem; margin-bottom: 3px; }
+        .lc-left p { font-size: 0.75rem; color: var(--text-muted); }
+        .lc-right { display: flex; gap: 8px; }
+        
+        /* BUTTONS */
+        .btn-icon { width: 35px; height: 35px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; }
+        .btn-success { background: var(--success); }
+        .btn-danger { background: var(--danger); }
+        .btn-info { background: #3b82f6; }
+
+        /* TABS */
+        .tabs { display: flex; gap: 10px; margin-bottom: 15px; background: var(--card-bg); padding: 5px; border-radius: 10px; }
+        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; color: var(--text-muted); font-weight: 500; transition: 0.3s; }
+        .tab.active { background: var(--primary); color: white; }
+
+        /* LOGIN OVERLAY */
+        #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        
+        /* HIDE SECTIONS */
+        .section { display: none; animation: fadeUp 0.3s; }
+        .section.active { display: block; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* RESPONSIVE NAV */
+        .btm-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); display: flex; justify-content: space-around; padding: 15px 10px; border-top: 1px solid #334155; z-index: 50; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
+        .nav-item { color: var(--text-muted); font-size: 1.2rem; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .nav-item span { font-size: 0.7rem; }
+        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
+
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen">
+        <div style="background:var(--card-bg); padding:30px; border-radius:20px; width:100%; max-width:350px; text-align:center; border:1px solid #334155;">
+            <i class="fas fa-user-shield" style="font-size:3rem; color:var(--primary); margin-bottom:20px;"></i>
+            <h2 style="margin-bottom:10px;">Admin Access</h2>
+            <p style="color:#aaa; font-size:0.8rem; margin-bottom:20px;">Enter PIN to continue</p>
+            <input type="password" id="pin-code" placeholder="PIN: 1234" class="form-control" style="text-align:center; font-size:1.2rem; letter-spacing:5px; margin-bottom:20px;">
+            <button onclick="checkLogin()" class="btn-save">UNLOCK PANEL</button>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="admin-app" style="display:none;">
+        <div class="header">
+            <div class="logo"><i class="fas fa-bolt"></i> SMART ADMIN</div>
+            <div class="logout" onclick="location.reload()"><i class="fas fa-power-off"></i></div>
+        </div>
+
+        <div class="container">
+            
+            <!-- HOME / DASHBOARD -->
+            <div id="p-dash" class="section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-num" id="st-users">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pending Pay</div>
+                        <div class="stat-num" id="st-pending" style="color:var(--warning)">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Active Tasks</div>
+                        <div class="stat-num" id="st-tasks">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Paid Total</div>
+                        <div class="stat-num" id="st-paid" style="color:var(--success)">0</div>
+                    </div>
+                </div>
+
+                <div class="sec-title"><i class="fas fa-sliders-h"></i> App Configuration</div>
+                <div class="settings-box">
+                    <div class="input-group">
+                        <label>Bot Username (Without @)</label>
+                        <input id="c-bot" class="form-control" placeholder="example_bot">
+                    </div>
+                    
+                    <!-- NEW: AD LIMIT & BREAK -->
+                    <div style="background:#0f172a; padding:10px; border-radius:10px; margin-bottom:15px; border:1px solid #334155;">
+                        <label style="color:var(--primary); font-weight:600; margin-bottom:10px; display:block;">Ad Control System</label>
+                        <div class="task-row">
+                            <div class="input-group" style="flex:1;">
+                                <label>Ad Reward (TK)</label>
+                                <input id="c-adrew" type="number" class="form-control">
+                            </div>
+                            <div class="input-group" style="flex:1;">
+                                <label>Max Ads (Limit)</label>
+                                <input id="c-max-ads" type="number" class="form-control" placeholder="e.g. 10">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Break Time (Minutes) after Limit</label>
+                            <input id="c-break-time" type="number" class="form-control" placeholder="e.g. 60 (1 Hour)">
+                        </div>
+                    </div>
+
+                    <div class="task-row">
+                        <div class="input-group" style="flex:1;">
+                            <label>Ref Bonus</label>
+                            <input id="c-ref" type="number" class="form-control">
+                        </div>
+                        <div class="input-group" style="flex:1;">
+                            <label>Min Withdraw</label>
+                            <input id="c-minw" type="number" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Support Link</label>
+                        <input id="c-supp" class="form-control" placeholder="https://t.me/...">
+                    </div>
+                    <div class="input-group">
+                        <label>Ad Zone ID (Monetag)</label>
+                        <input id="c-zone" class="form-control">
+                    </div>
+                    <button onclick="saveConfig()" class="btn-save">UPDATE SETTINGS</button>
+                </div>
+            </div>
+
+            <!-- TASKS PAGE -->
+            <div id="p-tasks" class="section">
+                <div class="sec-title"><i class="fas fa-plus-circle"></i> Add New Task</div>
+                <div class="task-adder">
+                    <input id="t-title" class="form-control" placeholder="Task Title (e.g. Watch Video)">
+                    <input id="t-url" class="form-control" placeholder="Task Link (https://...)">
+                    <div class="task-row">
+                        <select id="t-cat" class="form-control">
+                            <option value="youtube">YouTube</option>
+                            <option value="telegram">Telegram</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="tiktok">TikTok</option>
+                        </select>
+                        <input id="t-rew" type="number" class="form-control" placeholder="Reward" style="width:80px;">
+                    </div>
+                    <button onclick="addTask()" class="btn-save" style="background:#3b82f6;">ADD TASK</button>
+                </div>
+
+                <div class="sec-title"><i class="fas fa-list"></i> Active Tasks</div>
+                <div id="task-list" class="list-container"></div>
+            </div>
+
+            <!-- WITHDRAWAL PAGE -->
+            <div id="p-pay" class="section">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('pending')">Pending Request</div>
+                    <div class="tab" onclick="switchTab('history')">History (All)</div>
+                </div>
+
+                <!-- Pending List -->
+                <div id="view-pending" class="list-container"></div>
+
+                <!-- History List -->
+                <div id="view-history" class="list-container" style="display:none;"></div>
+            </div>
+
+        </div>
+
+        <!-- BOTTOM NAV -->
+        <div class="btm-nav">
+            <div class="nav-item active" onclick="nav('p-dash', this)">
+                <i class="fas fa-home"></i><span>Home</span>
+            </div>
+            <div class="nav-item" onclick="nav('p-tasks', this)">
+                <i class="fas fa-tasks"></i><span>Tasks</span>
+            </div>
+            <div class="nav-item" onclick="nav('p-pay', this)">
+                <i class="fas fa-wallet"></i><span>History</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update, push, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBav2wIXMRZngEXSsrUc3L_tTNY",
+          authDomain: "fariya-1a12c.firebaseapp.com",
+          databaseURL: "https://fariya-1a12c-detdb.firebaseio.com",
+          projectId: "fariya-2c",
+          storageBucket: "fariya-1a12c.ftorage.app",
+          messagingSenderId: "672171504498",
+          appId: "1:672171504498:web:2f64838670c792be5923eb"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // --- AUTH ---
+        window.checkLogin = () => {
+            if(document.getElementById('pin-code').value === "1234") {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('admin-app').style.display = 'block';
+                initData();
+            } else {
+                alert("Wrong PIN! Try 1234");
+            }
+        };
+
+        function initData() {
+            // 1. FETCH CONFIG & FILL INPUTS
+            onValue(ref(db, 'config'), (snap) => {
+                const c = snap.val() || {};
+                document.getElementById('c-bot').value = c.botUsername || '';
+                document.getElementById('c-supp').value = c.supportLink || '';
+                document.getElementById('c-ref').value = c.refBonus || 0;
+                document.getElementById('c-minw').value = c.minWithdraw || 50;
+                document.getElementById('c-adrew').value = c.adReward || 0;
+                document.getElementById('c-zone').value = c.adZone || '';
+                
+                // NEW INPUTS
+                document.getElementById('c-max-ads').value = c.maxAds || 10;
+                document.getElementById('c-break-time').value = c.adBreak || 60;
+            });
+
+            // 2. FETCH STATS
+            onValue(ref(db, 'users'), s => document.getElementById('st-users').innerText = s.size);
+            onValue(ref(db, 'tasks'), s => document.getElementById('st-tasks').innerText = s.size);
+
+            // 3. FETCH TASKS
+            onValue(ref(db, 'tasks'), (snap) => {
+                const list = document.getElementById('task-list');
+                list.innerHTML = '';
+                snap.forEach(c => {
+                    const t = c.val();
+                    let icon = t.category=='youtube'?'fa-youtube':(t.category=='facebook'?'fa-facebook':'fa-telegram');
+                    list.innerHTML += `
+                    <div class="list-card">
+                        <div class="lc-left">
+                            <h4><i class="fab ${icon}"></i> ${t.title}</h4>
+                            <p>${t.reward} TK - ${t.url}</p>
+                        </div>
+                        <button onclick="deleteKey('tasks/${c.key}')" class="btn-icon btn-danger"><i class="fas fa-trash"></i></button>
+                    </div>`;
+                });
+            });
+
+            // 4. FETCH WITHDRAWALS
+            onValue(ref(db, 'withdrawals'), (snap) => {
+                const pendingDiv = document.getElementById('view-pending');
+                const historyDiv = document.getElementById('view-history');
+                pendingDiv.innerHTML = '';
+                historyDiv.innerHTML = '';
+                let pCount = 0, paidCount = 0;
+
+                const data = [];
+                snap.forEach(c => data.push({key:c.key, ...c.val()}));
+                data.reverse(); // Show new first
+
+                data.forEach(w => {
+                    const html = `
+                    <div class="list-card" style="border-left:4px solid ${w.status=='pending'?'#f59e0b':(w.status=='approved'?'#10b981':'#ef4444')}">
+                        <div class="lc-left">
+                            <h4>${w.amount} TK <span style="font-size:0.7rem; background:#333; padding:2px 6px; border-radius:4px;">${w.method}</span></h4>
+                            <p>${w.account} <br> User: ${w.userName}</p>
+                            <small style="color:${w.status=='pending'?'orange':'gray'}">${w.status.toUpperCase()}</small>
+                        </div>
+                        <div class="lc-right">
+                            ${w.status === 'pending' ? `
+                                <button onclick="setStatus('${w.key}','approved')" class="btn-icon btn-success"><i class="fas fa-check"></i></button>
+                                <button onclick="setStatus('${w.key}','rejected')" class="btn-icon btn-danger"><i class="fas fa-times"></i></button>
+                            ` : `
+                                <button onclick="deleteKey('withdrawals/${w.key}')" class="btn-icon btn-danger" style="opacity:0.5;"><i class="fas fa-trash-alt"></i></button>
+                            `}
+                        </div>
+                    </div>`;
+
+                    if(w.status === 'pending') {
+                        pendingDiv.innerHTML += html;
+                        pCount++;
+                    } else {
+                        historyDiv.innerHTML += html;
+                        if(w.status === 'approved') paidCount++;
+                    }
+                });
+                document.getElementById('st-pending').innerText = pCount;
+                document.getElementById('st-paid').innerText = paidCount;
+            });
+        }
+
+        // --- ACTIONS ---
+        window.saveConfig = () => {
+            update(ref(db, 'config'), {
+                botUsername: document.getElementById('c-bot').value,
+                supportLink: document.getElementById('c-supp').value,
+                refBonus: parseFloat(document.getElementById('c-ref').value),
+                minWithdraw: parseFloat(document.getElementById('c-minw').value),
+                adReward: parseFloat(document.getElementById('c-adrew').value),
+                adZone: document.getElementById('c-zone').value,
+                
+                // SAVING NEW SETTINGS
+                maxAds: parseFloat(document.getElementById('c-max-ads').value),
+                adBreak: parseFloat(document.getElementById('c-break-time').value)
+            });
+            alert("Configuration Updated Successfully!");
+        };
+
+        window.addTask = () => {
+            const title = document.getElementById('t-title').value;
+            const url = document.getElementById('t-url').value;
+            const rew = parseFloat(document.getElementById('t-rew').value);
+            const cat = document.getElementById('t-cat').value;
+            
+            if(title && url && rew) {
+                push(ref(db, 'tasks'), { title, url, reward: rew, category: cat });
+                document.getElementById('t-title').value = '';
+                document.getElementById('t-url').value = '';
+                alert("Task Added!");
+            } else {
+                alert("Fill all fields");
+            }
+        };
+
+        window.setStatus = (key, status) => {
+            update(ref(db, `withdrawals/${key}`), { status: status });
+        };
+
+        window.deleteKey = (path) => {
+            if(confirm("Are you sure you want to DELETE this item?")) {
+                remove(ref(db, path));
+            }
+        };
+
+        // --- UI ---
+        window.nav = (p, el) => {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(p).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+        };
+
+        window.switchTab = (t) => {
+            document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+            event.target.classList.add('active');
+            if(t === 'pending') {
+                document.getElementById('view-pending').style.display = 'flex';
+                document.getElementById('view-history').style.display = 'none';
+            } else {
+                document.getElementById('view-pending').style.display = 'none';
+                document.getElementById('view-history').style.display = 'flex';
+            }
+        };
+
+    </script>
+</body>
+</html>
